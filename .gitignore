@@ -4,7 +4,7 @@
 __pycache__/
 *.py[cod]
 *$py.class
-*.so
+# *.so
 *.egg
 *.egg-info/
 dist/
@@ -83,3 +83,4 @@ models/
 *.onnx
 *.engine
 *.trt
+third_party/

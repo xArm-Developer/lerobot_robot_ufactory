@@ -1,0 +1,16 @@
+from ufactory_lerobot.cameras.utils import make_cameras_from_configs as _uf_make_cameras_from_configs
+from ufactory_lerobot.robots.utils import make_robot_from_config as _uf_make_robot_from_config
+from ufactory_lerobot.teleoperators.utils import make_teleoperator_from_config as _uf_make_teleoperator_from_config
+import lerobot.cameras as _lerobot_cameras
+import lerobot.robots as _lerobot_robot
+import lerobot.teleoperators as _lerobot_teleoperators
+import lerobot.cameras.utils as _lerobot_cameras_utils
+import lerobot.robots.utils as _lerobot_robot_utils
+import lerobot.teleoperators.utils as _lerobot_teleoperators_utils
+# patch
+_lerobot_cameras.make_cameras_from_configs = _uf_make_cameras_from_configs
+_lerobot_robot.make_robot_from_config = _uf_make_robot_from_config
+_lerobot_teleoperators.make_teleoperator_from_config = _uf_make_teleoperator_from_config
+_lerobot_cameras_utils.make_cameras_from_configs = _uf_make_cameras_from_configs
+_lerobot_robot_utils.make_robot_from_config = _uf_make_robot_from_config
+_lerobot_teleoperators_utils.make_teleoperator_from_config = _uf_make_teleoperator_from_config
