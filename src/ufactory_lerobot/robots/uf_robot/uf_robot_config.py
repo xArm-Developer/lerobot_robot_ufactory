@@ -1,31 +1,14 @@
 from dataclasses import dataclass, field
 from typing import Tuple
 from lerobot.cameras import CameraConfig
-from lerobot.cameras.realsense import RealSenseCameraConfig
 from lerobot.robots import RobotConfig
 
 @RobotConfig.register_subclass("uf::robot")
 @dataclass
 class UFRobotConfig(RobotConfig):
-    # cameras
     cameras: dict[str, CameraConfig] = field(
-        default_factory=lambda: {
-            "overhead": RealSenseCameraConfig(
-                serial_number_or_name="Intel RealSense D435I",
-                fps=30,
-                width=640, # 1280
-                height=480, # 720
-                # rotation=90,
-            ),
-            "tool": RealSenseCameraConfig(
-                serial_number_or_name="Intel RealSense D435",
-                fps=30,
-                width=640, # 1280
-                height=480, # 720
-            ),
-        }
+        default_factory=lambda: {}
     )
-
     robot_ip: str = "192.168.1.127"
     robot_dof: int | None = None  # Set it correctly if controlling in joint space!
     control_space: str = "joint"

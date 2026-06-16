@@ -276,9 +276,9 @@ def record(cfg: RecordConfig) -> LeRobotDataset:
             try:
                 if key == keyboard.Key.enter:
                     if not is_recorded:
-                        print('[HELP] <ESC>: EXIT, <SPACE>: START, <LEFT ARROW>: RESET, <RIGH ARROW>: SAVE')
+                        print('⌨   [ESC] Exit  [Space] Start  [←] Reset  [→] Save')
                     else:
-                        print('[HELP] <ESC>: EXIT, <LEFT ARROW>: RESET, <RIGH ARROW>: SAVE')
+                        print('⌨   [ESC] Exit  [←] Reset  [→] Save')
                     # is_recorded = True
             except Exception as e:
                 print(f"Error handling key release: {e}")
@@ -287,9 +287,9 @@ def record(cfg: RecordConfig) -> LeRobotDataset:
 
         listener, events = init_keyboard_listener(events=events, on_press=on_press, on_release=on_release)
         print("\n********** Episode Record Loop Start **********")
-        print('[HELP] <ESC>: EXIT, <SPACE>: START, <LEFT ARROW>: RESET, <RIGH ARROW>: SAVE')
+        print('⌨   [ESC] Exit  [Space] Start  [←] Reset  [→] Save')
     else:
-        input('[HELP] Enter to to start record >>> ')
+        input('⌨   Press Enter to start record >>> ')
         if is_uf_teleop:
             teleop.set_teleop_enabled(True)
         is_recorded = True
@@ -312,7 +312,7 @@ def record(cfg: RecordConfig) -> LeRobotDataset:
                 if events["rerecord_episode"]:
                     events["rerecord_episode"] = False
                     events["exit_early"] = False
-                    input('\nPress Enter to regenerate random target location >>>>> ')
+                    input('\n⌨   Press Enter to regenerate random target location >>>>> ')
                     continue
                 if events["stop_recording"]:
                     continue
@@ -357,9 +357,9 @@ def record(cfg: RecordConfig) -> LeRobotDataset:
                     dataset.clear_episode_buffer()
                 is_recorded = False
                 if is_evt:
-                    print('[HELP] <ESC>: EXIT, <SPACE>: START, <LEFT ARROW>: RESET, <RIGH ARROW>: SAVE')
+                    print('⌨   [ESC] Exit  [Space] Start  [←] Reset  [→] Save')
                 else:
-                    input('\nPress Enter to rerecord this episode >>>>> ')
+                    input('\n⌨   Press Enter to rerecord this episode >>>>> ')
                     is_recorded = True
                 continue
 
@@ -368,12 +368,13 @@ def record(cfg: RecordConfig) -> LeRobotDataset:
                 if is_uf_teleop:
                     teleop.set_teleop_enabled(False)
                 dataset.save_episode()
+                log_say(f"[Finish] Save episode {dataset.num_episodes}", cfg.play_sounds)
                 recorded_episodes += 1
                 is_recorded = False
                 if is_evt:
-                    print('[HELP] <ESC>: EXIT, <SPACE>: START, <LEFT ARROW>: RESET, <RIGH ARROW>: SAVE')
+                    print('⌨   [ESC] Exit  [Space] Start  [←] Reset  [→] Save')
                 else:
-                    input('Press Enter to record at the next episode >>>>> ')
+                    input('⌨   Press Enter to record at the next episode >>>>> ')
                     is_recorded = True
 
     print("\n********** Episode Record Loop Exit **********")

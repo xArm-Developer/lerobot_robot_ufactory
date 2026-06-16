@@ -1,0 +1,38 @@
+RobotConfig:
+  _target_: ufactory_lerobot.robots.uf_robot.UFRobotConfig
+  id: "uf_robot"
+  robot_dof: 7
+  control_space: "cartesian"
+  robot_ip: "192.168.1.127"
+  gripper_type: 0
+
+  cameras:
+    overhead:
+      _target_: lerobot.cameras.realsense.configuration_realsense.RealSenseCameraConfig
+      serial_number_or_name: "Intel RealSense D435I"
+      width: 640
+      height: 480
+      fps: 30
+    tool:
+      _target_: lerobot.cameras.realsense.configuration_realsense.RealSenseCameraConfig
+      serial_number_or_name: "Intel RealSense D435"
+      width: 640
+      height: 480
+      fps: 30
+
+DatasetRecordConfig:
+  _target_: lerobot.scripts.lerobot_record.DatasetRecordConfig
+  # root: /home/<user_name>/.cache/huggingface/lerobot (default)
+  root: "../lerobot_datas/record/ufactory/xarm7_pushT"
+  repo_id: "ufactory/xarm7_pushT"
+  single_task: "Push the T-block into the specified zone then go to reset position."
+  fps: 10
+  episode_time_s: 60  # max duration for one episode
+  reset_time_s: 20    # (invalid) time for resetting env between episodes
+  push_to_hub: False
+
+# space mouse
+TeleoperatorConfig:
+  _target_: ufactory_lerobot.teleoperators.space_mouse.SpaceMouseTeleopConfig
+  max_value: 300
+  use_gripper: False

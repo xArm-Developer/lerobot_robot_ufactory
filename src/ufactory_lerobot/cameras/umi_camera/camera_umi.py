@@ -18,13 +18,8 @@ Provides the RealSenseCamera class for capturing frames from Intel RealSense cam
 
 import logging
 import time
-from threading import Event, Lock, Thread
 from typing import Any
-
 import cv2  # type: ignore  # TODO: add type stubs for OpenCV
-import numpy as np  # type: ignore  # TODO: add type stubs for numpy
-from numpy.typing import NDArray  # type: ignore  # TODO: add type stubs for numpy.typing
-from lerobot.utils.errors import DeviceAlreadyConnectedError, DeviceNotConnectedError
 from lerobot.cameras.camera import Camera
 from ufactory_lerobot.devices.umi.xvlib import XVLib
 from .configuration_umi import UmiCameraConfig
@@ -60,11 +55,6 @@ class UmiCamera(Camera):
         self.last_frame = None
         self.xvlib = XVLib(self.serial_number)
         self.xvlib.xv_color_camera_init()
-        self.xvlib.xv_set_color_camera_framerate(self.config.fps)
-        self.frame_lock = Lock()
-        self.new_frame_event: Event = Event()
-        self.thread = Thread(target=self._read_loop, daemon=True)
-        self.thread.start()
 
     def __str__(self) -> str:
         return f"{self.__class__.__name__}({self.serial_number})"
@@ -83,18 +73,6 @@ class UmiCamera(Camera):
             start_time = time.monotonic()
             while time.monotonic() - start_time < self.warmup_s:
                 time.sleep(0.1)
-    
-    def _read_loop(self):
-        while True:
-            try:
-                frame = self.read()
-                if frame is not None:
-                    with self.frame_lock:
-                        self.last_frame = frame
-                    self.new_frame_event.set()
-            except Exception as e:
-                print('Read Frame Ex: {}'.format(e))
-            time.sleep(0.01)
 
     def read(self, color_mode = None):
         ret, img_data = self.xvlib.xv_get_color_image_rgb_data()
@@ -114,16 +92,11 @@ class UmiCamera(Camera):
         return frame
 
     def async_read(self, timeout_ms: float = 200):
-        if not self.new_frame_event.wait(timeout=timeout_ms / 1000.0):
-            thread_alive = self.thread is not None and self.thread.is_alive()
-            raise TimeoutError(
-                f"Timed out waiting for frame from camera {self} after {timeout_ms} ms. "
-                f"Read thread alive: {thread_alive}."
-            )
-
-        with self.frame_lock:
+        frame = self.read()
+        if frame is not None:
+            self.last_frame = frame
+        else:
             frame = self.last_frame
-            self.new_frame_event.clear()
         return frame
 
     def disconnect(self) -> None:

@@ -85,11 +85,11 @@ def teleop_loop(cfg: TeleopConfig):
                 if key == keyboard.Key.enter:
                     if is_paused:
                         if is_reset:
-                            print('[HELP] <ESC>: EXIT, <SPACE>: RESET AND START, <LEFT ARROW>: RESET')
+                            print('⌨   [ESC] Exit  [Space] Reset / Start  [←] Reset')
                         else:
-                            print('[HELP] <ESC>: EXIT, <SPACE>: START, <LEFT ARROW>: RESET')
+                            print('⌨   [ESC] Exit  [Space] Start  [←] Reset')
                     else:
-                        print('[HELP] <ESC>: EXIT, <SPACE>: PAUSE, <LEFT ARROW>: RESET')
+                        print('⌨   [ESC] Exit  [Space] Pause  [←] Pause / Reset')
             except Exception as e:
                 print(f"Error handling key release: {e}")
             if key in key_dict:
@@ -97,9 +97,9 @@ def teleop_loop(cfg: TeleopConfig):
 
         listener, events = init_keyboard_listener(events=events, on_press=on_press, on_release=on_release)
         print("\n********** Teleop Control Loop Start **********")
-        print('[HELP] <ESC>: EXIT, <SPACE>: START, <LEFT ARROW>: RESET')
+        print('⌨   [ESC] Exit  [Space] Start  [←] Reset')
     else:
-        input('[HELP] Enter to control robot with teleop >>> ')
+        input('⌨   Press Enter to start teleop >>> ')
         if is_uf_teleop:
             obs = robot.get_observation()
             teleop.set_teleop_enabled(True, obs)
@@ -121,7 +121,7 @@ def teleop_loop(cfg: TeleopConfig):
                     is_paused = True
                     if is_uf_teleop:
                         teleop.set_teleop_enabled(False)
-                print('[HELP] <ESC>: EXIT, <SPACE>: RESET AND START, <LEFT ARROW>: RESET')
+                print('⌨   [ESC] Exit  [Space] Reset / Start  [←] Reset')
             elif not key_dict[keyboard.Key.left] and key_left_pressed:
                 key_left_pressed = False
 
@@ -132,7 +132,7 @@ def teleop_loop(cfg: TeleopConfig):
                     if is_uf_teleop:
                         teleop.set_teleop_enabled(False)
                     # print('========== Teleop is paused ==========')
-                    print('[HELP] <ESC>: EXIT, <SPACE>: START, <LEFT ARROW>: RESET')
+                    print('⌨   [ESC] Exit  [Space] Start  [←] Reset')
                 else:
                     if is_reset:
                         is_reset = False
@@ -141,7 +141,7 @@ def teleop_loop(cfg: TeleopConfig):
                     if is_uf_teleop:
                         obs = robot.get_observation()
                         teleop.set_teleop_enabled(True, obs)
-                    print('[HELP] <ESC>: EXIT, <SPACE>: PAUSE, <LEFT ARROW>: RESET')
+                    print('⌨   [ESC] Exit  [Space] Pause  [←] Reset')
                 continue
             elif not key_dict[keyboard.Key.space] and key_space_pressed:
                 key_space_pressed = False

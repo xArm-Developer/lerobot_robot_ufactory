@@ -7,7 +7,7 @@ name = "ufactory_lerobot"
 version = "0.1.0"
 description = "UFACTORY 机械臂与 LeRobot 框架集成"
 readme = "README.md"
-license = { text = "MIT" }
+license = { text = "Apache-2.0" }
 requires-python = ">=3.10"
 authors = [
     { name = "ufactory_lerobot Contributors" },
@@ -23,8 +23,31 @@ classifiers = [
     "Programming Language :: Python :: 3.12",
     "Topic :: Scientific/Engineering :: Artificial Intelligence",
 ]
+dependencies = [
+    "numpy>=1.24",
+    "pyyaml",
+    "lerobot==0.4.3",
+    "xarm-python-sdk",
+    "opencv-python",
+]
+
+[project.scripts]
+uf-robot-teleop = "ufactory_lerobot.scripts.uf_robot_teleop:main"
+uf-lerobot-record = "ufactory_lerobot.scripts.uf_lerobot_record:main"
+uf-lerobot-eval = "ufactory_lerobot.scripts.uf_lerobot_eval:main"
+uf-vive-calibrate = "ufactory_lerobot.scripts.vive_calibrate:main"
 
 [project.optional-dependencies]
+# GELLO 遥操作
+gello = [
+    "gello @ git+https://github.com/xArm-Developer/gello_software.git",
+    "dynamixel-sdk @ git+https://github.com/ROBOTIS-GIT/DynamixelSDK.git#subdirectory=python",
+]
+# SpaceMouse 遥操作
+spacemouse = [
+    "spnav @ git+https://github.com/kazoo-osaro/spnav",
+]
+# 开发工具
 dev = [
     "pytest>=8.0",
     "pytest-cov>=5.0",
@@ -32,22 +55,15 @@ dev = [
     "mypy>=1.10",
     "pre-commit>=3.7",
 ]
-camera = [
-    "opencv-python>=4.9",
-    "pyrealsense2>=2.55",
-]
-lerobot = [
-    "lerobot==0.4.3",
-]
-train = [
-    "torch>=2.2",
-    "torchvision>=0.17",
-    "huggingface-hub>=0.25",
-    "wandb>=0.17",
-]
+
+[tool.setuptools]
+include-package-data = true
 
 [tool.setuptools.packages.find]
-where = ["."]
+where = ["src"]
+
+[tool.setuptools.package-data]
+"ufactory_lerobot.devices.umi.xvlib" = ["*.so", "*.so.*"]
 
 [tool.ruff]
 line-length = 100

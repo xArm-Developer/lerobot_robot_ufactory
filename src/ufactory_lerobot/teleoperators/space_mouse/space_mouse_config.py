@@ -24,7 +24,7 @@ from lerobot.teleoperators import TeleoperatorConfig
 class SpaceMouseTeleopConfig(TeleoperatorConfig):
     # Port to connect to the arm
     max_value: int = 300
-    deadzone: tuple = (0,0,0,0,0,0)
+    deadzone: tuple = (0, 0, 0, 0, 0, 0)
     use_gripper: bool = False
     frequency: int = 10 # hz
     max_pos_speed: int = 250 # mm/s

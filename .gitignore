@@ -83,4 +83,5 @@ models/
 *.onnx
 *.engine
 *.trt
-third_party/
+*.xvcd
+ufactory_usage/

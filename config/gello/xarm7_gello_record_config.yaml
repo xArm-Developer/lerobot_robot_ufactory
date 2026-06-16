@@ -1,0 +1,27 @@
+RobotConfig:
+  _target_: ufactory_lerobot.robots.uf_robot.UFRobotConfig
+  id: "uf_robot"
+  robot_dof: 7
+  control_space: "joint"
+  robot_ip: "192.168.1.85"
+  gripper_type: 1
+  start_joints: [0, 0, 0, 90, 0, 90, 0]
+
+DatasetRecordConfig:
+  _target_: lerobot.scripts.lerobot_record.DatasetRecordConfig
+  # root of local repo: /home/<user_name>/.cache/huggingface/lerobot (default)
+  root: "../lerobot_datas/record/ufactory/xarm6_gello_datas"
+  repo_id: "ufactory/xarm6_gello_datas"
+  single_task: "Pick up the purple grape and drop into the box on the left."
+  fps: 30
+  episode_time_s: 60  # max duration for one episode
+  reset_time_s: 20    # (invalid) time for resetting env between episodes
+  push_to_hub: False
+
+# make sure to edit with your correct configurations!
+TeleoperatorConfig:
+  _target_: ufactory_lerobot.teleoperators.gello_teleop.GelloTeleopConfig
+  id: "gello_teleop"
+  port: "/dev/serial/by-id/usb-FTDI_USB__-__Serial_Converter_FTAJZYC7-if00-port0"
+  start_joints: [0, 0, 0, 90, 0, 90, 0]
+

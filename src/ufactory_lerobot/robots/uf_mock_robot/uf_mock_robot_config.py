@@ -1,22 +1,12 @@
 from dataclasses import dataclass, field
 from lerobot.cameras import CameraConfig
-from lerobot.cameras.opencv import OpenCVCameraConfig
 from lerobot.robots import RobotConfig
 
 @RobotConfig.register_subclass("uf::mock_robot")
 @dataclass
 class UFMockRobotConfig(RobotConfig):
-    # cameras
     cameras: dict[str, CameraConfig] = field(
-        default_factory=lambda: {
-            "fisheye": OpenCVCameraConfig(
-                index_or_path=6,
-                width=640,
-                height=480,
-                fps=30,
-                fourcc="MJPG"
-            )
-        }
+        default_factory=lambda: {}
     )
 
     robot_dof: int | None = None  # Set it correctly if controlling in joint space!

@@ -86,6 +86,10 @@ class UmiTeleop(UFBaseTeleop):
     def connect(self, calibrate: bool = False) -> None:
         self.tracker = ViveTracker() if self.config.use_vive_tracker else None
         self.xvlib = XVLib(self.config.serial_number, not self.config.use_vive_tracker, self.config.use_gripper)
+        if not self.config.use_vive_tracker:
+            self.xvlib.xv_slam_init()
+        if self.config.use_gripper:
+            self.xvlib.xv_clamp_stream_init()
         self._is_connected = True
 
     def disconnect(self):

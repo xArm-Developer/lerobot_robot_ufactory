@@ -24,11 +24,10 @@ class UFMockRobot(Robot):
         super().__init__(config)
         self.prefix = '' if not prefix else f"{prefix}."
         self.config = config
-        self._dof = config.robot_dof 
-        if self._dof == None or (not self._dof in (5, 6, 7)):
-            raise ValueError(f"Please specify the correct DOF uf_robot!, got {self._dof}")
-
+        self._dof = config.robot_dof
         self._control_space = self.config.control_space
+        if self._control_space == "joint" and (self._dof == None or (not self._dof in (5, 6, 7))):
+            raise ValueError(f"Please specify the correct DOF uf_robot!, got {self._dof}")
         self._jnt_obs_has_vel = config.observe_joint_vel if self._control_space == "joint" else False
         self._is_connected = False
         self._is_calibrated =True
