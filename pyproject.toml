@@ -36,6 +36,7 @@ uf-robot-teleop = "ufactory_lerobot.scripts.uf_robot_teleop:main"
 uf-lerobot-record = "ufactory_lerobot.scripts.uf_lerobot_record:main"
 uf-lerobot-eval = "ufactory_lerobot.scripts.uf_lerobot_eval:main"
 uf-vive-calibrate = "ufactory_lerobot.scripts.vive_calibrate:main"
+uf-camera-view = "ufactory_lerobot.scripts.uf_camera_view:main"
 
 [project.optional-dependencies]
 # GELLO 遥操作
