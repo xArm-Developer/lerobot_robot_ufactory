@@ -75,7 +75,7 @@ class UmiCamera(Camera):
                 time.sleep(0.1)
 
     def read(self, color_mode = None):
-        ret, img_data = self.xvlib.xv_get_color_camera_data()
+        ret, img_data = self.xvlib.xv_get_color_camera_data(use_ref=True)
         if ret <= 0 or img_data is None:
             return None
         requested_color_mode = self.color_mode if color_mode is None else color_mode
