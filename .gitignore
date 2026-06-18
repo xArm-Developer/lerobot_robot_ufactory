@@ -4,7 +4,10 @@
 __pycache__/
 *.py[cod]
 *$py.class
-# *.so
+*.so
+*.so.*
+!src/ufactory_lerobot/devices/umi/xvlib/lib*.so
+!src/ufactory_lerobot/devices/umi/xvlib/lib*.so.*
 *.egg
 *.egg-info/
 dist/

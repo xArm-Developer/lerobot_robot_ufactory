@@ -75,20 +75,16 @@ class UmiCamera(Camera):
                 time.sleep(0.1)
 
     def read(self, color_mode = None):
-        ret, img_data = self.xvlib.xv_get_color_image_rgb_data()
-        if ret <= 0:
+        ret, img_data = self.xvlib.xv_get_color_camera_data()
+        if ret <= 0 or img_data is None:
             return None
         requested_color_mode = self.color_mode if color_mode is None else color_mode
         if requested_color_mode not in (ColorMode.RGB, ColorMode.BGR):
             raise ValueError(
                 f"Invalid color mode '{requested_color_mode}'. Expected {ColorMode.RGB} or {ColorMode.BGR}."
             )
-        if requested_color_mode == ColorMode.RGB:
-            frame = img_data.frame(rgb=True)
-        else:
-            frame = img_data.frame(rgb=False)
-        if self.rotation in [cv2.ROTATE_90_CLOCKWISE, cv2.ROTATE_90_COUNTERCLOCKWISE, cv2.ROTATE_180]:
-            frame = cv2.rotate(frame, self.rotation)
+        rgb = requested_color_mode == ColorMode.RGB
+        frame = img_data.frame(rgb=rgb, rotate=self.rotation)
         return frame
 
     def async_read(self, timeout_ms: float = 200):

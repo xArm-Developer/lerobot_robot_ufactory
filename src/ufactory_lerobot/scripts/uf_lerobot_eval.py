@@ -73,8 +73,8 @@ def compute_relative_axis_angle(rot_prev, rot_curr):
     返回: 相对轴角向量
     """
     # 1. 转为矩阵
-    R_prev = Transformations.rxryrz_to_rotation_matrix(rot_prev)
-    R_curr = Transformations.rxryrz_to_rotation_matrix(rot_curr)
+    R_prev = Transformations.rxryrz_to_rotation_matrix(*rot_prev)
+    R_curr = Transformations.rxryrz_to_rotation_matrix(*rot_curr)
     
     # 2. 计算相对旋转矩阵
     # R_delta 表示从 prev 坐标系到 curr 坐标系的旋转
@@ -87,8 +87,8 @@ def compute_target_axis_angle(rot_prev, rot_delta):
     """
     根据起始轴角和相对轴角计算目标轴角
     """
-    R_prev = Transformations.rxryrz_to_rotation_matrix(rot_prev)
-    R_delta = Transformations.rxryrz_to_rotation_matrix(rot_delta)
+    R_prev = Transformations.rxryrz_to_rotation_matrix(*rot_prev)
+    R_delta = Transformations.rxryrz_to_rotation_matrix(*rot_delta)
     R_curr = R_prev @ R_delta
     # R_curr = R_prev.apply(R_delta)
     return Transformations.rotation_matrix_to_rxryrz(R_curr)
