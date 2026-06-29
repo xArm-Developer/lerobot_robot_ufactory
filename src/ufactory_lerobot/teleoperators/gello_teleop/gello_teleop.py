@@ -3,8 +3,6 @@ import logging
 import time
 import math
 import numpy as np
-from gello.dynamixel.driver import DynamixelDriver
-from gello.agents.gello_agent import GelloAgent, DynamixelRobotConfig
 from lerobot.utils.errors import DeviceAlreadyConnectedError, DeviceNotConnectedError
 from ..base_teleop import UFBaseTeleop
 from .gello_teleop_config import GelloTeleopConfig
@@ -25,6 +23,9 @@ class GelloTeleop(UFBaseTeleop):
         self.config = config
         self._is_connected = False
         self._is_calibrated = True # CHECK!!
+
+        from gello.dynamixel.driver import DynamixelDriver
+        from gello.agents.gello_agent import DynamixelRobotConfig
 
         # auto get joint offset from gello
         joint_ids = []
@@ -91,6 +92,7 @@ class GelloTeleop(UFBaseTeleop):
     def connect(self, calibrate: bool = True) -> None:
         if self._is_connected:
             raise DeviceAlreadyConnectedError(f"{self} already connected")
+        from gello.agents.gello_agent import GelloAgent
 
         self.gello_agent = GelloAgent(port=self.config.port, dynamixel_config=self._dynamixel_robo_config)
         if not self._is_calibrated and calibrate:

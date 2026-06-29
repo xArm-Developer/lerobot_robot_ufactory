@@ -78,6 +78,30 @@ class ViveTracker(metaclass=SingletonMeta):
         self._latest_raw_poses = {}
         if not self._init():
             raise RuntimeError("Failed to initialize Vive Tracker: pysurvive context creation failed")
+
+    def stop(self):
+        """停止采集线程 (不释放 context, 可重新 start)"""
+        self.running = False
+        if self._collector_thread is not None:
+            self._collector_thread.join(timeout=2.0)
+            self._collector_thread = None
+
+    def close(self):
+        """停止采集并释放 pysurvive context。"""
+        self.stop()
+        if self._context is not None:
+            try:
+                self._context.close()
+            except Exception:
+                pass
+            self._context = None
+
+    def __del__(self):
+        # 只做兜底清理，吞掉所有异常避免 __del__ 抛异常导致解释器崩溃
+        try:
+            self.close()
+        except Exception:
+            pass
     
     def __del__(self):
         logger.info("Stopping Vive Tracker pose tracking...")

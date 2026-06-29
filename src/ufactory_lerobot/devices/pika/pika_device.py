@@ -1,8 +1,5 @@
 import time
 import logging
-import threading
-import serial
-from serial.tools import list_ports
 
 # 配置日志
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
@@ -15,6 +12,7 @@ def get_serial_ports(vidpid='1a86:7522'):
     vidpid: 指定设备的VID:PID字符串, 默认值为'1a86:7522'
     返回找到的所有符合的串口号列表
     """
+    from serial.tools import list_ports
     ports = list_ports.comports()
     pika_ports = []
     for port in ports:
@@ -34,6 +32,7 @@ def check_pika_device(port):
         1: Pika Sense设备
         2: Pika Gripper设备
     """
+    import serial
     try:
         ser = serial.Serial(
             port=port,

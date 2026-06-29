@@ -19,9 +19,7 @@ Provides the RealSenseCamera class for capturing frames from Intel RealSense cam
 import logging
 import time
 from typing import Any
-import cv2  # type: ignore  # TODO: add type stubs for OpenCV
 from lerobot.cameras.camera import Camera
-from ufactory_lerobot.devices.umi.xvlib import XVLib
 from .configuration_umi import UmiCameraConfig
 from lerobot.cameras.configs import ColorMode
 from lerobot.cameras.utils import get_cv2_rotation
@@ -53,6 +51,7 @@ class UmiCamera(Camera):
         self.rotation: int | None = get_cv2_rotation(config.rotation)
 
         self.last_frame = None
+        from ufactory_lerobot.devices.umi.xvlib import XVLib
         self.xvlib = XVLib(self.serial_number)
         self.xvlib.xv_color_camera_init()
 

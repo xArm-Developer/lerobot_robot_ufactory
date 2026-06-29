@@ -4,7 +4,6 @@ import time
 import numpy as np
 from typing import Any
 from threading import Thread, Event
-from spnav import spnav_open, spnav_poll_event, spnav_close, SpnavMotionEvent, SpnavButtonEvent
 from lerobot.utils.errors import DeviceAlreadyConnectedError, DeviceNotConnectedError
 from collections import defaultdict
 
@@ -35,6 +34,7 @@ class SpaceMouseTeleop(Teleoperator, Thread):
             self.deadzone = np.array(deadzone, dtype=self.dtype)
         assert (self.deadzone >= 0).all()
 
+        from spnav import SpnavMotionEvent
         self.motion_event = SpnavMotionEvent([0,0,0], [0,0,0], 0)
         self.button_state = defaultdict(lambda: False)
         self.tx_zup_spnav = np.array([
@@ -129,6 +129,7 @@ class SpaceMouseTeleop(Teleoperator, Thread):
         return self.button_state[button_id]
 
     def run(self):
+        from spnav import spnav_open, spnav_poll_event, spnav_close, SpnavMotionEvent, SpnavButtonEvent
         spnav_open()
         self._is_connected = True
         try:

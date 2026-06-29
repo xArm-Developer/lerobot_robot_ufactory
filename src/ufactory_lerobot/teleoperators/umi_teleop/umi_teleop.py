@@ -5,7 +5,6 @@ from typing import Any
 from lerobot.utils.errors import DeviceAlreadyConnectedError, DeviceNotConnectedError
 from ufactory_lerobot.devices.umi.vive_tracker.transformations import Transformations
 from ufactory_lerobot.devices.umi.vive_tracker import ViveTracker
-from ufactory_lerobot.devices.umi.xvlib import XVLib
 from ..base_teleop import UFBaseTeleop
 from .umi_teleop_config import UmiTeleopConfig
 
@@ -27,6 +26,7 @@ class UmiTeleop(UFBaseTeleop):
         self.tracker = None
         self.xvlib = None
 
+        # from ufactory_lerobot.devices.umi.xvlib import XVLib
         # self.tracker = ViveTracker() if self.config.use_vive_tracker else None
         # self.xvlib = XVLib(self.config.serial_number, not self.config.use_vive_tracker, self.config.use_gripper)
 
@@ -84,6 +84,7 @@ class UmiTeleop(UFBaseTeleop):
         pass
 
     def connect(self, calibrate: bool = False) -> None:
+        from ufactory_lerobot.devices.umi.xvlib import XVLib
         self.tracker = ViveTracker() if self.config.use_vive_tracker else None
         self.xvlib = XVLib(self.config.serial_number, not self.config.use_vive_tracker, self.config.use_gripper)
         if not self.config.use_vive_tracker:

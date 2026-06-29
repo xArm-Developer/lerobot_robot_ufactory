@@ -14,3 +14,12 @@ _lerobot_teleoperators.make_teleoperator_from_config = _uf_make_teleoperator_fro
 _lerobot_cameras_utils.make_cameras_from_configs = _uf_make_cameras_from_configs
 _lerobot_robot_utils.make_robot_from_config = _uf_make_robot_from_config
 _lerobot_teleoperators_utils.make_teleoperator_from_config = _uf_make_teleoperator_from_config
+# register plugin
+import ufactory_lerobot.cameras.umi_camera
+import ufactory_lerobot.robots.uf_robot
+import ufactory_lerobot.robots.uf_mock_robot
+import ufactory_lerobot.teleoperators.uf_mock_teleop
+import ufactory_lerobot.teleoperators.gello_teleop
+import ufactory_lerobot.teleoperators.pika_teleop
+import ufactory_lerobot.teleoperators.space_mouse
+import ufactory_lerobot.teleoperators.umi_teleop
