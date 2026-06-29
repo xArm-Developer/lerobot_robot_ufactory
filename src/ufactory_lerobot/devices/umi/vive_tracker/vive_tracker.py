@@ -81,20 +81,25 @@ class ViveTracker(metaclass=SingletonMeta):
 
     def stop(self):
         """停止采集线程 (不释放 context, 可重新 start)"""
+        logger.info("Stopping Vive Tracker pose tracking...")
         self.running = False
         if self._collector_thread is not None:
             self._collector_thread.join(timeout=2.0)
             self._collector_thread = None
+            logger.info("Vive Tracker pose tracking stopped")
 
     def close(self):
         """停止采集并释放 pysurvive context。"""
         self.stop()
         if self._context is not None:
             try:
+                logger.info("Closing Vive Tracker pysurvive context...")
                 self._context.close()
-            except Exception:
-                pass
+                logger.info("Vive Tracker pysurvive context closed")
+            except Exception as e:
+                logger.debug(f"Vive Tracker context close error: {e}")
             self._context = None
+        logger.info("Vive Tracker disconnected")
 
     def __del__(self):
         # 只做兜底清理，吞掉所有异常避免 __del__ 抛异常导致解释器崩溃
@@ -102,16 +107,6 @@ class ViveTracker(metaclass=SingletonMeta):
             self.close()
         except Exception:
             pass
-    
-    def __del__(self):
-        logger.info("Stopping Vive Tracker pose tracking...")
-        self.running = False
-        # 等待线程结束
-        if self._collector_thread:
-            self._collector_thread.join(timeout=2.0)
-        # 清理资源
-        self._context = None
-        logger.info("Vive Tracker disconnected")
     
     # def list_devices(self):
     #     import pysurvive
