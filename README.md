@@ -52,8 +52,8 @@ UFACTORY robot arm integration with the LeRobot framework for robot learning, da
 ### Base Install
 
 ```bash
-git clone https://github.com/xArm-Developer/ufactory_lerobot.git
-cd ufactory_lerobot
+git clone https://github.com/xArm-Developer/lerobot_robot_ufactory.git
+cd lerobot_robot_ufactory
 
 # Create conda environment
 conda create -n uf_lerobot python=3.10 -y
@@ -151,11 +151,11 @@ Test teleop-to-robot control loop without recording.
 
 ```bash
 # Generic usage
-uf-robot-teleop -c path/to/config.yaml
-uf-robot-teleop -c path/to/config.yaml -f 60  # specify frequency
+uf-robot-teleop --config_path path/to/config.yaml
+uf-robot-teleop --config_path path/to/config.yaml --fps 60  # specify frequency
 
 # Example: xArm6 + UMI teleop
-uf-robot-teleop -c config/umi/xarm6_umi_record_config.yaml
+uf-robot-teleop --config_path config/umi/xarm6_umi_record_config.yaml
 ```
 
 ### 2. Data Collection
@@ -164,11 +164,11 @@ Record datasets via teleop.
 
 ```bash
 # Generic usage
-uf-lerobot-record -c path/to/record_config.yaml
-uf-lerobot-record -c path/to/config.yaml --resume  # resume recording
+uf-lerobot-record --config_path path/to/record_config.yaml
+uf-lerobot-record --config_path path/to/config.yaml --resume true        # resume recording
 
 # Example: xArm6 + UMI data collection
-uf-lerobot-record -c config/umi/xarm6_umi_record_config.yaml
+uf-lerobot-record --config_path config/umi/xarm6_umi_record_config.yaml
 ```
 
 ### 3. Policy Training
@@ -208,10 +208,10 @@ Run inference with a trained policy.
 
 ```bash
 # Generic usage
-uf-lerobot-eval -c path/to/config.yaml --policy.path your_train_path
+uf-lerobot-eval --config_path path/to/config.yaml --policy.path your_train_path
 
 # Example: run inference with trained ACT policy
-uf-lerobot-eval -c config/umi/xarm6_umi_record_config.yaml --policy.path ../../../../lerobot_datas/train/xarm6_umi_datas/checkpoints/last/pretrained_model/
+uf-lerobot-eval --config_path config/umi/xarm6_umi_record_config.yaml --policy.path ../../../../lerobot_datas/train/xarm6_umi_datas/checkpoints/last/pretrained_model/
 ```
 
 ## Tools
@@ -274,17 +274,18 @@ lerobot-edit-dataset \
 ## Project Structure
 
 ```
-ufactory_lerobot/
+lerobot_robot_ufactory/
 ├── src/
-│   ├── ufactory_lerobot/
+│   ├── lerobot_robot_ufactory/      # LeRobot plugin package
 │   │   ├── robots/                 # Robot control
 │   │   │   ├── uf_robot/           #   xArm physical robot
 │   │   │   ├── uf_mock_robot/      #   Mock robot simulator
 │   │   ├── teleoperators/          # Teleop drivers
+│   │   │   ├── base_teleop/        #   Shared base class
 │   │   │   ├── gello_teleop/       #   GELLO (Dynamixel leader)
 │   │   │   ├── pika_teleop/        #   Pika Sense (handheld + Vive)
 │   │   │   ├── umi_teleop/         #   UMI (dual-arm support)
-│   │   │   ├── space_mouse/        #   SpaceMouse (3D mouse)
+│   │   │   └── space_mouse/        #   SpaceMouse (3D mouse)
 │   │   ├── cameras/                # Camera modules
 │   │   │   └── umi_camera/         #   UMI camera
 │   │   ├── devices/                # External device drivers
@@ -296,6 +297,7 @@ ufactory_lerobot/
 │   │   │   ├── uf_lerobot_eval.py     # Policy evaluation
 │   │   │   ├── uf_camera_view.py      # Camera viewer tool
 │   │   │   └── vive_calibrate.py      # Vive Tracker calibration
+│   │   ├── context.py              # Teleop context registry
 │   │   └── utils/                  # Utilities
 ├── config/                         # YAML config files
 │   ├── gello/
@@ -303,7 +305,6 @@ ufactory_lerobot/
 │   ├── umi/
 │   └── spacemouse/
 ├── rules/                          # udev device rules
-├── xvsdk/                          # XVSDK system dependency
 ├── pyproject.toml
 └── README.md
 ```

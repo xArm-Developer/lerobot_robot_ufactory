@@ -52,8 +52,8 @@ UFACTORY(深圳市众为创造科技有限公司) 机械臂与 LeRobot 框架集
 ### 基础项目安装
 
 ```bash
-git clone https://github.com/xArm-Developer/ufactory_lerobot.git
-cd ufactory_lerobot
+git clone https://github.com/xArm-Developer/lerobot_robot_ufactory.git
+cd lerobot_robot_ufactory
 
 # 创建 conda 环境
 conda create -n uf_lerobot python=3.10 -y
@@ -150,11 +150,11 @@ sudo udevadm control --reload-rules && sudo udevadm trigger
 
 ```bash
 # 通用格式
-uf-robot-teleop -c path/to/config.yaml
-uf-robot-teleop -c path/to/config.yaml -f 60  # 指定频率
+uf-robot-teleop --config_path path/to/config.yaml
+uf-robot-teleop --config_path path/to/config.yaml --fps 60  # 指定频率
 
-# 示例：xArm6 + UMI 遥操作
-uf-robot-teleop -c config/umi/xarm6_umi_record_config.yaml
+# 示例: xArm6 + UMI 遥操作
+uf-robot-teleop --config_path config/umi/xarm6_umi_record_config.yaml
 ```
 
 ### 2. 数据采集
@@ -163,11 +163,11 @@ uf-robot-teleop -c config/umi/xarm6_umi_record_config.yaml
 
 ```bash
 # 通用格式
-uf-lerobot-record -c path/to/record_config.yaml
-uf-lerobot-record -c path/to/config.yaml --resume  # 续录
+uf-lerobot-record --config_path path/to/record_config.yaml
+uf-lerobot-record --config_path path/to/config.yaml --resume true     # 续录
 
-# 示例：xArm6 + UMI 数据采集
-uf-lerobot-record -c config/umi/xarm6_umi_record_config.yaml
+# 示例: xArm6 + UMI 数据采集
+uf-lerobot-record --config_path config/umi/xarm6_umi_record_config.yaml
 ```
 
 ### 3. Lerobot训练
@@ -204,10 +204,10 @@ lerobot-train \
 
 ```bash
 # 通用格式
-uf-lerobot-eval -c path/to/config.yaml --policy.path your_train_path
+uf-lerobot-eval --config_path path/to/config.yaml --policy.path your_train_path
 
 # 示例：使用训练好的 ACT 策略进行推理
-uf-lerobot-eval -c config/umi/xarm6_umi_record_config.yaml --policy.path ../../../../lerobot_datas/train/xarm6_umi_datas/checkpoints/last/pretrained_model/
+uf-lerobot-eval --config_path config/umi/xarm6_umi_record_config.yaml --policy.path ../../../../lerobot_datas/train/xarm6_umi_datas/checkpoints/last/pretrained_model/
 ```
 
 ## 工具集
@@ -270,17 +270,18 @@ lerobot-edit-dataset \
 ## 项目结构
 
 ```
-ufactory_lerobot/
+lerobot_robot_ufactory/
 ├── src/
-│   ├── ufactory_lerobot/
+│   ├── lerobot_robot_ufactory/      # LeRobot 插件包
 │   │   ├── robots/                 # 机器人控制
 │   │   │   ├── uf_robot/           #   xArm 实体机器人
 │   │   │   ├── uf_mock_robot/      #   仿真 Mock 机器人
 │   │   ├── teleoperators/          # 遥操作器
+│   │   │   ├── base_teleop/        #   共享基类
 │   │   │   ├── gello_teleop/       #   GELLO (Dynamixel 示教臂)
 │   │   │   ├── pika_teleop/        #   Pika Sense (手持示教器 + Vive)
 │   │   │   ├── umi_teleop/         #   UMI (含双机械臂)
-│   │   │   ├── space_mouse/        #   SpaceMouse (3D 鼠标)
+│   │   │   └── space_mouse/        #   SpaceMouse (3D 鼠标)
 │   │   ├── cameras/                # 摄像头模块
 │   │   │   └── umi_camera/         #   UMI 相机
 │   │   ├── devices/                # 外部设备驱动
@@ -292,6 +293,7 @@ ufactory_lerobot/
 │   │   │   ├── uf_lerobot_eval.py     # 策略评估
 │   │   │   ├── uf_camera_view.py      # 摄像头查看工具
 │   │   │   └── vive_calibrate.py      # Vive Tracker 校准
+│   │   ├── context.py              # Teleop 上下文注册
 │   │   └── utils/                  # 工具函数
 ├── config/                         # YAML 配置文件
 │   ├── gello/
@@ -299,7 +301,6 @@ ufactory_lerobot/
 │   ├── umi/
 │   └── spacemouse/
 ├── rules/                         # udev 设备规则
-├── xvsdk/                         # XVSDK 系统依赖
 ├── pyproject.toml
 └── README.md
 ```
