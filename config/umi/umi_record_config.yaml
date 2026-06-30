@@ -1,19 +1,21 @@
-RobotConfig:
-  _target_: ufactory_lerobot.robots.uf_mock_robot.UFMockRobotConfig
+robot:
+  type: uf::mock_robot
   id: "uf_mock_robot"  
   control_space: "cartesian"
   gripper_type: 1
   state_offset_action: 3
+  teleop_id: "umi_250801DR48FP26001295"
   cameras:
     fisheye:
-      _target_: ufactory_lerobot.cameras.umi_camera.configuration_umi.UmiCameraConfig
+      type: uf::umi_camera
       serial_number: "250801DR48FP26001295"
       width: 1280
       height: 1280
       fps: 100
 
-TeleoperatorConfig:
-  _target_: ufactory_lerobot.teleoperators.umi_teleop.UmiTeleopConfig
+teleop:
+  type: uf::umi_teleop
+  id: "umi_250801DR48FP26001295"
   serial_number: "250801DR48FP26001295"
   use_vive_tracker: False
   vive_tracker_id: "LHR-2425BAD3"
@@ -21,14 +23,13 @@ TeleoperatorConfig:
   tracker_to_robot_eef: [0, 0, 0, 0, 0, -90]
   robot_base_pose: [400, 0, 400, 180, 0, 0]
 
-DatasetRecordConfig:
-  _target_: lerobot.scripts.lerobot_record.DatasetRecordConfig
+dataset:
   # root of local repo: /home/<user_name>/.cache/huggingface/lerobot (default)
   root: "/home/uf/Data/lerobot_datas/record/ufactory/umi_datas"
   repo_id: "ufactory/umi_datas"
   single_task: "Pick up the purple grape and drop into the box on the left."
   fps: 60
   episode_time_s: 60  # max duration for one episode
-  reset_time_s: 20    # (invalid) time for resetting env between episodes
+  reset_time_s: 20    # time for resetting env between episodes
   num_episodes: 100
   push_to_hub: False

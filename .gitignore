@@ -6,8 +6,8 @@ __pycache__/
 *$py.class
 *.so
 *.so.*
-!src/ufactory_lerobot/devices/umi/xvlib/lib*.so
-!src/ufactory_lerobot/devices/umi/xvlib/lib*.so.*
+!src/lerobot_robot_ufactory/devices/umi/xvlib/lib*.so
+!src/lerobot_robot_ufactory/devices/umi/xvlib/lib*.so.*
 *.egg
 *.egg-info/
 dist/

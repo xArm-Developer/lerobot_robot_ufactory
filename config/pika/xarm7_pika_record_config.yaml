@@ -1,5 +1,5 @@
-RobotConfig:
-  _target_: ufactory_lerobot.robots.uf_robot.UFRobotConfig
+robot:
+  type: uf::robot
   id: "uf_robot"
   robot_dof: 7
   control_space: "cartesian"
@@ -8,18 +8,24 @@ RobotConfig:
   max_linear_velocity: 200
   start_joints: [-0.2, -13.9, -0.3, 52.6, 0.9, 66.6, 0.2]
   start_tcp_pose: [400, 0, 400, 180, 0, 0]
-  
   cameras:
     fisheye:
-      _target_: lerobot.cameras.opencv.configuration_opencv.OpenCVCameraConfig
+      type: opencv
       index_or_path: "/dev/v4l/by-id/usb-DECXIN_CAMERA_DECXIN_CAMERA_01.00.00-video-index0"
       width: 640
       height: 480
       fps: 30
       fourcc: "MJPG"
 
-DatasetRecordConfig:
-  _target_: lerobot.scripts.lerobot_record.DatasetRecordConfig
+# make sure to edit with your correct configurations!
+teleop:
+  type: uf::pika_teleop
+  # port: "/dev/ttyUSB0"
+  scale_xyz: 1.5
+  tracker_to_robot_eef: [0, 0, 0, 180, -90, 0]
+  robot_base_pose: [400, 0, 400, 180, 0, 0]
+
+dataset:
   # root of local repo: /home/<user_name>/.cache/huggingface/lerobot (default)
   root: "/home/uf/Data/lerobot_datas/record/ufactory/xarm7_pika_datas"
   repo_id: "ufactory/xarm7_pika_datas"
@@ -28,11 +34,3 @@ DatasetRecordConfig:
   episode_time_s: 60  # max duration for one episode
   reset_time_s: 20    # (invalid) time for resetting env between episodes
   push_to_hub: False
-
-# make sure to edit with your correct configurations!
-TeleoperatorConfig:
-  _target_: ufactory_lerobot.teleoperators.pika_teleop.PikaTeleopConfig
-  # port: "/dev/ttyUSB0"
-  scale_xyz: 1.5
-  tracker_to_robot_eef: [0, 0, 0, 180, -90, 0]
-  robot_base_pose: [400, 0, 400, 180, 0, 0]

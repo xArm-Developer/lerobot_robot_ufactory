@@ -3,14 +3,14 @@ requires = ["setuptools>=68.0", "wheel>=0.42"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "ufactory_lerobot"
+name = "lerobot_robot_ufactory"
 version = "0.1.0"
 description = "UFACTORY 机械臂与 LeRobot 框架集成"
 readme = "README.md"
 license = { text = "Apache-2.0" }
 requires-python = ">=3.10"
 authors = [
-    { name = "ufactory_lerobot Contributors" },
+    { name = "lerobot_robot_ufactory Contributors" },
 ]
 keywords = ["robotics", "lerobot", "ufactory", "xarm", "imitation-learning"]
 classifiers = [
@@ -32,11 +32,11 @@ dependencies = [
 ]
 
 [project.scripts]
-uf-robot-teleop = "ufactory_lerobot.scripts.uf_robot_teleop:main"
-uf-lerobot-record = "ufactory_lerobot.scripts.uf_lerobot_record:main"
-uf-lerobot-eval = "ufactory_lerobot.scripts.uf_lerobot_eval:main"
-uf-vive-calibrate = "ufactory_lerobot.scripts.vive_calibrate:main"
-uf-camera-view = "ufactory_lerobot.scripts.uf_camera_view:main"
+uf-robot-teleop = "lerobot_robot_ufactory.scripts.uf_robot_teleop:main"
+uf-lerobot-record = "lerobot_robot_ufactory.scripts.uf_lerobot_record:main"
+uf-lerobot-eval = "lerobot_robot_ufactory.scripts.uf_lerobot_eval:main"
+uf-vive-calibrate = "lerobot_robot_ufactory.scripts.vive_calibrate:main"
+uf-camera-view = "lerobot_robot_ufactory.scripts.uf_camera_view:main"
 
 [project.optional-dependencies]
 # GELLO 遥操作
@@ -64,7 +64,7 @@ include-package-data = true
 where = ["src"]
 
 [tool.setuptools.package-data]
-"ufactory_lerobot.devices.umi.xvlib" = ["*.so", "*.so.*"]
+"lerobot_robot_ufactory.devices.umi.xvlib" = ["*.so", "*.so.*"]
 
 [tool.ruff]
 line-length = 100

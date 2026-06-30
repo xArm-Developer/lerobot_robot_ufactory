@@ -1,12 +1,12 @@
-RobotConfig:
-  _target_: ufactory_lerobot.robots.uf_robot.MultipleUFRobotConfig
+robot:
+  type: uf::multiple_robot
   id: "multiple_uf_robots"
   async_connect: True
   async_configure: True
   async_action: False
   robots:
     left:
-      _target_: ufactory_lerobot.robots.uf_robot.UFRobotConfig
+      type: uf::robot
       id: "left_uf_robot"
       robot_dof: 6
       control_space: "cartesian"
@@ -15,16 +15,23 @@ RobotConfig:
       max_linear_velocity: 200
       start_joints: [-14.7, 25.6, -49.6, -282.5, 95.9, -65.9]
       start_tcp_pose: [400, 0, 150, -90, 0, 0]
+      teleop_id: "umi_250801DR48FP26001318"
+      # no_action: True
       cameras:
         fisheye:
-          _target_: lerobot.cameras.opencv.configuration_opencv.OpenCVCameraConfig
+          # type: uf::umi_camera
+          # serial_number: "250801DR48FB26001379"
+          # width: 1280
+          # height: 1280
+          # fps: 30
+          type: opencv
           index_or_path: "/dev/v4l/by-id/usb-XVisio_Technology_XVisio_vSLAM_250801DR48FB26001379-video-index0"
           width: 1280
           height: 1280
           fps: 100
           fourcc: "YUYV"
     right:
-      _target_: ufactory_lerobot.robots.uf_robot.UFRobotConfig
+      type: uf::robot
       id: "right_uf_robot"
       robot_dof: 6
       control_space: "cartesian"
@@ -33,9 +40,16 @@ RobotConfig:
       max_linear_velocity: 200
       start_joints: [14.5, 25.5, -49.6, -76.8, 95.9, 66.6]
       start_tcp_pose: [400, 0, 150, 90, 0, 0]
+      teleop_id: "umi_250801DR48FP26001295"
+      # no_action: True
       cameras:
         fisheye:
-          _target_: lerobot.cameras.opencv.configuration_opencv.OpenCVCameraConfig
+          # type: uf::umi_camera
+          # serial_number: "250801DR48FB26001396"
+          # width: 1280
+          # height: 1280
+          # fps: 30
+          type: opencv
           index_or_path: "/dev/v4l/by-id/usb-XVisio_Technology_XVisio_vSLAM_250801DR48FB26001396-video-index0"
           width: 1280
           height: 1280
@@ -43,13 +57,13 @@ RobotConfig:
           fourcc: "YUYV"
 
 # make sure to edit with your correct configurations!
-TeleoperatorConfig:
-  _target_: ufactory_lerobot.teleoperators.umi_teleop.MultipleUmiTeleopConfig
+teleop:
+  type: uf::multiple_umi_teleop
   id: "multiple_teleops"
   teleops:
     left:
-      _target_: ufactory_lerobot.teleoperators.umi_teleop.UmiTeleopConfig
-      id: "left_teleop"
+      type: uf::umi_teleop
+      id: "umi_250801DR48FP26001318"
       serial_number: "250801DR48FP26001318"
       use_vive_tracker: False
       vive_tracker_id: "LHR-555DC7BF"
@@ -57,8 +71,8 @@ TeleoperatorConfig:
       tracker_to_robot_eef: [0, 0, 0, 0, 0, -90]
       robot_base_pose: [400, 0, 150, -90, 0, 0]
     right:
-      _target_: ufactory_lerobot.teleoperators.umi_teleop.UmiTeleopConfig
-      id: "right_teleop"
+      type: uf::umi_teleop
+      id: "umi_250801DR48FP26001295"
       serial_number: "250801DR48FP26001295"
       use_vive_tracker: False
       vive_tracker_id: "LHR-2425BAD3"
@@ -66,15 +80,14 @@ TeleoperatorConfig:
       tracker_to_robot_eef: [0, 0, 0, 0, 0, -90]
       robot_base_pose: [400, 0, 150, 90, 0, 0]
 
-DatasetRecordConfig:
-  _target_: lerobot.scripts.lerobot_record.DatasetRecordConfig
+dataset:
   # root of local repo: /home/<user_name>/.cache/huggingface/lerobot (default)
   root: "/home/uf/Data/lerobot_datas/record/ufactory/dual_xarm6_umi_datas"
   repo_id: "ufactory/dual_xarm6_umi_datas"
   single_task: "Pick up the purple grape and drop into the box on the left."
   fps: 60
   episode_time_s: 60  # max duration for one episode
-  reset_time_s: 20    # (invalid) time for resetting env between episodes
+  reset_time_s: 20    # time for resetting env between episodes
   num_episodes: 100
   push_to_hub: False
 

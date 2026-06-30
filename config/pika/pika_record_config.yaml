@@ -1,21 +1,29 @@
-RobotConfig:
-  _target_: ufactory_lerobot.robots.uf_mock_robot.UFMockRobotConfig
+robot:
+  type: uf::mock_robot
   id: "uf_mock_robot"  
   control_space: "cartesian"
   gripper_type: 2
   state_offset_action: 3
-  
+  teleop_id: "pika_xxxx"
   cameras:
     fisheye:
-      _target_: lerobot.cameras.opencv.configuration_opencv.OpenCVCameraConfig
+      type: opencv
       index_or_path: "/dev/v4l/by-id/usb-DECXIN_CAMERA_DECXIN_CAMERA_01.00.00-video-index0"
       width: 640
       height: 480
       fps: 30
       fourcc: "MJPG"
 
-DatasetRecordConfig:
-  _target_: lerobot.scripts.lerobot_record.DatasetRecordConfig
+# make sure to edit with your correct configurations!
+teleop:
+  type: uf::pika_teleop
+  id: "pika_xxxx"
+  # port: "/dev/ttyUSB0"
+  scale_xyz: 1.5
+  tracker_to_robot_eef: [0, 0, 0, 180, -90, 0]
+  robot_base_pose: [400, 0, 400, 180, 0, 0]
+
+dataset:
   # root of local repo: /home/<user_name>/.cache/huggingface/lerobot (default)
   root: "/home/uf/Data/lerobot_datas/record/ufactory/pika_datas"
   repo_id: "ufactory/pika_datas"
@@ -24,11 +32,3 @@ DatasetRecordConfig:
   episode_time_s: 60  # max duration for one episode
   reset_time_s: 20    # (invalid) time for resetting env between episodes
   push_to_hub: False
-
-# make sure to edit with your correct configurations!
-TeleoperatorConfig:
-  _target_: ufactory_lerobot.teleoperators.pika_teleop.PikaTeleopConfig
-  # port: "/dev/ttyUSB0"
-  scale_xyz: 1.5
-  tracker_to_robot_eef: [0, 0, 0, 180, -90, 0]
-  robot_base_pose: [400, 0, 400, 180, 0, 0]

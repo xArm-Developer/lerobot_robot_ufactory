@@ -1,42 +1,44 @@
-RobotConfig:
-  _target_: ufactory_lerobot.robots.uf_mock_robot.MultipleUFMockRobotConfig
+robot:
+  type: uf::multiple_mock_robot
   id: "multiple_uf_mock_robots"
   robots:
     left:
-      _target_: ufactory_lerobot.robots.uf_mock_robot.UFMockRobotConfig
+      type: uf::mock_robot
       id: "left_uf_mock_robot"
       control_space: "cartesian"
       gripper_type: 1
       state_offset_action: 3
+      teleop_id: "umi_250801DR48FP26001318"
       cameras:
         fisheye:
-          _target_: ufactory_lerobot.cameras.umi_camera.configuration_umi.UmiCameraConfig
+          type: uf::umi_camera
           serial_number: "250801DR48FP26001318"
           width: 1280
           height: 1280
           fps: 30
     right:
-      _target_: ufactory_lerobot.robots.uf_mock_robot.UFMockRobotConfig
+      type: uf::mock_robot
       id: "right_uf_mock_robot"
       control_space: "cartesian"
       gripper_type: 1
       state_offset_action: 3
+      teleop_id: "umi_250801DR48FP26001295"
       cameras:
         fisheye:
-          _target_: ufactory_lerobot.cameras.umi_camera.configuration_umi.UmiCameraConfig
+          type: uf::umi_camera
           serial_number: "250801DR48FP26001295"
           width: 1280
           height: 1280
           fps: 30
 
 # make sure to edit with your correct configurations!
-TeleoperatorConfig:
-  _target_: ufactory_lerobot.teleoperators.umi_teleop.MultipleUmiTeleopConfig
+teleop:
+  type: uf::multiple_umi_teleop
   id: "multiple_teleops"
   teleops:
     left:
-      _target_: ufactory_lerobot.teleoperators.umi_teleop.UmiTeleopConfig
-      id: "left_teleop"
+      type: uf::umi_teleop
+      id: "umi_250801DR48FP26001318"
       serial_number: "250801DR48FP26001318"
       use_vive_tracker: False
       vive_tracker_id: "LHR-555DC7BF"
@@ -44,8 +46,8 @@ TeleoperatorConfig:
       tracker_to_robot_eef: [0, 0, 0, 0, 0, -90]
       robot_base_pose: [400, 0, 150, -90, 0, 0]
     right:
-      _target_: ufactory_lerobot.teleoperators.umi_teleop.UmiTeleopConfig
-      id: "right_teleop"
+      type: uf::umi_teleop
+      id: "umi_250801DR48FP26001295"
       serial_number: "250801DR48FP26001295"
       use_vive_tracker: False
       vive_tracker_id: "LHR-2425BAD3"
@@ -53,15 +55,14 @@ TeleoperatorConfig:
       tracker_to_robot_eef: [0, 0, 0, 0, 0, -90]
       robot_base_pose: [400, 0, 150, 90, 0, 0]
 
-DatasetRecordConfig:
-  _target_: lerobot.scripts.lerobot_record.DatasetRecordConfig
+dataset:
   # root of local repo: /home/<user_name>/.cache/huggingface/lerobot (default)
   root: "/home/uf/Data/lerobot_datas/record/ufactory/dual_xarm6_umi_datas"
-  repo_id: "ufactory/dual_xarm6_umi_datas"
+  repo_id: "ufactory/dual_umi_datas"
   single_task: "Pick up the purple grape and drop into the box on the left."
   fps: 60
   episode_time_s: 60  # max duration for one episode
-  reset_time_s: 20    # (invalid) time for resetting env between episodes
+  reset_time_s: 20    # time for resetting env between episodes
   num_episodes: 100
   push_to_hub: False
 
