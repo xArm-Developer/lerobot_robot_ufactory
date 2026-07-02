@@ -124,12 +124,6 @@ def eval_loop(cfg: EvalConfig, relative=False, rx_continuous=False):
     init_logging()
     logging.info(pformat(asdict(cfg)))
 
-    # print(cfg.robot)
-    print(type(cfg.robot))
-    if hasattr(cfg.robot, 'robots'):
-        print(cfg.robot.robots.keys())
-    exit(1)
-
     robot = make_robot_from_config(cfg.robot)
 
     teleop_action_processor, robot_action_processor, robot_observation_processor = make_default_processors()

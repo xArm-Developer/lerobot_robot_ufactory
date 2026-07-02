@@ -32,8 +32,10 @@ from lerobot_robot_ufactory.teleoperators.base_teleop import UFBaseTeleop
 class TeleopConfig:
     robot: RobotConfig
     teleop: TeleoperatorConfig
-    dataset: dict = None # no use
     fps: int = 30
+
+    def __post_init__(self):
+        self.robot.cameras = {}
 
 
 def teleop_loop(cfg: TeleopConfig):
