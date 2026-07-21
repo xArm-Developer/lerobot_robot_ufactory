@@ -23,6 +23,7 @@ class MultipleUFRobot(Robot):
         self.action_queues = {}
         self.action_threads = {}
         for key, robot_config in self.config.robots.items():
+            robot_config.cameras_args = self.config.cameras_args
             robot = UFRobot(robot_config, prefix=key)
             self.robots[key] = robot
             if self._is_async_action:

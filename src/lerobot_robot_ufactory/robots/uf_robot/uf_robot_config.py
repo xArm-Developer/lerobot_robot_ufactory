@@ -9,6 +9,7 @@ class UFRobotConfig(RobotConfig):
     cameras: dict[str, CameraConfig] = field(
         default_factory=lambda: {}
     )
+    cameras_args: dict = None
     robot_ip: str = "192.168.1.127"
     robot_dof: int | None = None  # Set it correctly if controlling in joint space!
     control_space: str = "joint"

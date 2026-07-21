@@ -23,7 +23,7 @@ from lerobot.utils.robot_utils import precise_sleep
 from lerobot.utils.utils import (
     init_logging,
 )
-from lerobot.configs import parser
+from lerobot_robot_ufactory.configs import parser
 from lerobot_robot_ufactory.utils.utils import is_headless, init_keyboard_listener
 from lerobot_robot_ufactory.teleoperators.base_teleop import UFBaseTeleop
 
@@ -35,7 +35,11 @@ class TeleopConfig:
     fps: int = 30
 
     def __post_init__(self):
-        self.robot.cameras = {}
+        if hasattr(self.robot, 'robots'):
+            for _, robot in self.robot.robots.items():
+                robot.cameras = {}
+        else:
+            self.robot.cameras = {}
 
 
 def teleop_loop(cfg: TeleopConfig):

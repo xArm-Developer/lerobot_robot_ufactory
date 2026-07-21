@@ -75,6 +75,9 @@ class UFRobot(Robot, Thread):
         self._control_space = self.config.control_space
 
         self.real_arm = None
+        cameras_args = self.config.cameras_args or {}
+        self.camera_width = cameras_args.get('w', 0)
+        self.camera_height = cameras_args.get('h', 0)
         self.cameras = make_cameras_from_configs(config.cameras)
 
         self._is_connected = False
@@ -154,7 +157,10 @@ class UFRobot(Robot, Thread):
     def _cam_features(self) -> dict:
         cam_ft = {}
         for cam_key, cam in self.cameras.items():
-            cam_ft[f"{self.prefix}{cam_key}"] = (cam.height, cam.width, 3)
+            camera_width = self.camera_width if self.camera_width != 0 else cam.width
+            camera_height = self.camera_height if self.camera_height != 0 else cam.height
+            cam_ft[f"{self.prefix}{cam_key}"] = (camera_height, camera_width, 3)
+            # cam_ft[f"{self.prefix}{cam_key}"] = (cam.height, cam.width, 3)
         return cam_ft
 
     @property
@@ -332,7 +338,14 @@ class UFRobot(Robot, Thread):
         # Capture images from cameras
         for cam_key, cam in self.cameras.items():
             before_camread_t = time.perf_counter()
-            obs_dict[f"{self.prefix}{cam_key}"] = cam.async_read()
+            frame = cam.async_read()
+            shape = frame.shape
+            if (self.camera_height > 0 and self.camera_height != shape[0]) or (self.camera_width > 0 and self.camera_width != shape[1]):
+                camera_width = self.camera_width if self.camera_width != 0 else shape[1]
+                camera_height = self.camera_height if self.camera_height != 0 else shape[0]
+                import cv2
+                frame = cv2.resize(frame, (camera_height, camera_width), interpolation=cv2.INTER_AREA)
+            obs_dict[f"{self.prefix}{cam_key}"] = frame
             self.logs[f"async_read_camera_{cam_key}_dt_s"] = time.perf_counter() - before_camread_t
 
         return obs_dict

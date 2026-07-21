@@ -11,6 +11,7 @@ class MultipleUFRobotConfig(RobotConfig):
     async_connect: bool = True
     async_configure: bool = True
     async_action: bool = False
+    cameras_args: dict = None
 
     def __post_init__(self):
         super().__post_init__()

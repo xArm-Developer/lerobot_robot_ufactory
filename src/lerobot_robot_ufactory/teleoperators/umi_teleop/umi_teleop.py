@@ -1,8 +1,9 @@
 #!/usr/bin/env python
 
 import math
+import time
 from typing import Any
-from lerobot.utils.errors import DeviceAlreadyConnectedError, DeviceNotConnectedError
+from lerobot.utils.errors import DeviceNotConnectedError
 from lerobot_robot_ufactory.devices.umi.vive_tracker.transformations import Transformations
 from lerobot_robot_ufactory.devices.umi.vive_tracker import ViveTracker
 from ..base_teleop import UFBaseTeleop
@@ -37,6 +38,7 @@ class UmiTeleop(UFBaseTeleop):
         self.begin_tracker_robot_matrix = None
         self._last_robot_pose = Transformations.rotation_matrix_to_xyzrxryrz(self.robot_base_matrix)
         self._last_gripper_pos = 0.0
+        self._last_timestamp = 0
 
     @property
     def action_features(self) -> dict:
@@ -83,16 +85,65 @@ class UmiTeleop(UFBaseTeleop):
     def configure(self) -> None:
         pass
 
+    def wait_slam_ready(self, repeat_times=3, timeout=8.0, min_confidence=0.5, stable_frames=5) -> bool:
+        def _wait_slam_ready():
+            deadline = time.monotonic() + timeout
+            ok_count = 0
+            last_ts = None
+            cnt = 0
+            while time.monotonic() < deadline and self.is_connected:
+                time.sleep(0.04)
+                ret, pose = self.xvlib.xv_get_slam_data()
+                if cnt % 25 == 0:
+                    print(f'[{self.prefix}UMI{self.config.serial_number}] Waiting for SLAM ready ... confidence: {pose.confidence}, hostTimestamp: {pose.hostTimestamp}, edgeTimestampUs: {pose.edgeTimestampUs}')
+                cnt += 1
+                if ret == 0:
+                    if pose.confidence < min_confidence or pose.hostTimestamp == last_ts:
+                        ok_count = 0
+                        last_ts = pose.hostTimestamp
+                        continue
+                    ok_count += 1
+                    last_ts = pose.hostTimestamp
+                    if ok_count >= stable_frames:
+                        return True
+            return False
+
+        print(f'[{self.prefix}UMI{self.config.serial_number}] Waiting for SLAM ready ...')
+        ready = _wait_slam_ready()
+        if ready:
+            print(f'[{self.prefix}UMI{self.config.serial_number}] ******* SLAM is ready! ******')
+        else:
+            for i in range(repeat_times):
+                if not self.is_connected:
+                    break
+                print(f'[{self.prefix}UMI{self.config.serial_number}] ******* SLAM is not ready! ******, try {i+1}/{repeat_times}')
+                self.xvlib.xv_slam_uninit()
+                time.sleep(0.5)
+                self.xvlib.xv_slam_init()
+                time.sleep(0.5)
+                ready = _wait_slam_ready()
+                if ready:
+                    print(f'[{self.prefix}UMI{self.config.serial_number}] ******* SLAM is ready! ******')
+                    return
+            print(f'[{self.prefix}UMI{self.config.serial_number}] ******* SLAM is not ready after {repeat_times} tries! ******')
+            self._is_connected = False
+            raise DeviceNotConnectedError(f'[{self.prefix}UMI{self.config.serial_number}] SLAM is not ready, please check the device and try again.')
+
     def connect(self, calibrate: bool = False) -> None:
         from lerobot_robot_ufactory.devices.umi.xvlib import XVLib
         self.tracker = ViveTracker() if self.config.use_vive_tracker else None
-        self.xvlib = XVLib(self.config.serial_number, not self.config.use_vive_tracker, self.config.use_gripper)
+        self.xvlib = XVLib(self.config.serial_number, False, self.config.use_gripper)
         if not self.config.use_vive_tracker:
+            time.sleep(1) # wait xvlib init
             self.xvlib.xv_slam_init()
+            time.sleep(1) # wait slam init
         if self.config.use_gripper:
             self.xvlib.xv_clamp_stream_init()
         self._is_connected = True
         super().connect(calibrate)
+
+        if not self.config.use_vive_tracker:
+            self.wait_slam_ready()
 
     def disconnect(self):
         super().disconnect()
@@ -121,7 +172,7 @@ class UmiTeleop(UFBaseTeleop):
             self.begin_tracker_robot_matrix = None
             self._last_action = None
             self._teleop_enabled = True
-            print(f'[{self.prefix}UMI] Teleoperation is start')
+            print(f'[{self.prefix}UMI{self.config.serial_number}] Teleoperation is start')
         else:
             obs = self._last_action
             if obs:
@@ -130,7 +181,7 @@ class UmiTeleop(UFBaseTeleop):
                     self._last_gripper_pos = obs[f"{self.prefix}gripper.pos"]
             self._teleop_enabled = False
             self._last_action = None
-            print(f'[{self.prefix}UMI] Teleoperation has paused')
+            print(f'[{self.prefix}UMI{self.config.serial_number}] Teleoperation has paused')
 
     # delta action
     def get_action(self) -> dict[str, Any]:
@@ -156,10 +207,31 @@ class UmiTeleop(UFBaseTeleop):
         if self.tracker is not None:
             pose_data = self.tracker.get_pose(self.config.vive_tracker_id)
             if pose_data is None:
-                print('cant not get pose from vive tracker')
-                _, pose_data = self.xvlib.xv_get_slam_data()
+                print(f'[{self.prefix}UMI{self.config.serial_number}] cant not get pose from vive tracker')
+                ret, pose_data = self.xvlib.xv_get_slam_data()
+                if ret != 0:
+                    print(f'[{self.prefix}UMI{self.config.serial_number}] cant not get pose from xvlib, ret: {ret}')
+                    return self._last_action
+                elif pose_data.hostTimestamp == self._last_timestamp:
+                    print(f'[{self.prefix}UMI{self.config.serial_number}] pose hostTimestamp is the same as last time, use last action')
+                    return self._last_action
+                self._last_timestamp = pose_data.hostTimestamp
         else:
-            _, pose_data = self.xvlib.xv_get_slam_data()
+            ret, pose_data = self.xvlib.xv_get_slam_data()
+            if ret != 0:
+                print(f'[{self.prefix}UMI{self.config.serial_number}] cant not get pose from xvlib, ret: {ret}')
+                return self._last_action
+            elif pose_data.confidence < 0.3:
+                print(f'[{self.prefix}UMI{self.config.serial_number}] pose confidence is too low: {pose_data.confidence}, use last action')
+                return self._last_action
+            # elif pose_data.hostTimestamp == self._last_timestamp:
+            #     print(f'[{self.prefix}UMI{self.config.serial_number}] pose hostTimestamp({pose_data.hostTimestamp} {self._last_timestamp}) is the same as last time, use last action')
+            #     return self._last_action
+            self._last_timestamp = pose_data.hostTimestamp
+            # print(f'[{self.prefix}UMI{self.config.serial_number}] pose11: {pose_data.position.to_list(6)}, confidence: {pose_data.confidence}, hostTimestamp: {pose_data.hostTimestamp}, edgeTimestampUs: {pose_data.edgeTimestampUs}')
+            # self.xvlib.xv_get_slam_pose(0)
+            # print(f'[{self.prefix}UMI{self.config.serial_number}] pose22: {pose_data.position.to_list(6)}, confidence: {pose_data.confidence}, hostTimestamp: {pose_data.hostTimestamp}, edgeTimestampUs: {pose_data.edgeTimestampUs}')
+
         position = pose_data.position.to_list(6)
         quaternion = pose_data.quaternion.to_list(6)
 
