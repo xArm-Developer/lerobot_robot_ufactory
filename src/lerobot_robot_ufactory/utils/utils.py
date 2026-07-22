@@ -72,3 +72,9 @@ def init_keyboard_listener(events: dict = None, on_press: callable = None, on_re
     listener.start()
 
     return listener, events
+
+def version_ge(ver_str: str, target: str) -> bool:
+    try:
+        return tuple(int(x) for x in ver_str.split(".")) >= tuple(int(x) for x in target.split("."))
+    except:
+        return False
