@@ -570,6 +570,36 @@ class XVLib:
         return None
 
     @classmethod
+    def _load_tbb_lib(cls, lib_dir):
+        """预加载 libtbb.so.2，解决 bundled OpenCV 的 TBB 依赖。
+
+        策略: 系统路径(apt 安装) → 本地 bundled 版本。
+        bundled libopencv_core.so.4.2 依赖旧版 libtbb.so.2 (Intel TBB 2.x ABI)，
+        而 Ubuntu 22.04+ 的 oneAPI TBB (libtbb.so.12) 不兼容，必须显式预加载。
+        """
+        tbb_paths = [
+            '/usr/lib/x86_64-linux-gnu/libtbb.so.2',
+            '/usr/lib/libtbb.so.2',
+            '/usr/local/lib/libtbb.so.2',
+        ]
+        for p in tbb_paths:
+            if os.path.exists(p):
+                try:
+                    ctypes.CDLL(p, mode=ctypes.RTLD_GLOBAL)
+                    logger.info(f'Loaded libtbb.so.2 from system ({p})')
+                    return
+                except OSError:
+                    pass
+
+        local_path = os.path.join(lib_dir, 'libtbb.so.2')
+        if os.path.exists(local_path):
+            ctypes.CDLL(local_path, mode=ctypes.RTLD_GLOBAL)
+            logger.info('Loaded libtbb.so.2 from local (bundled)')
+            return
+
+        logger.warning('libtbb.so.2 not found, OpenCV loading may fail')
+
+    @classmethod
     def _load_opencv_lib(cls, lib_dir, fname):
         """加载 opencv .so: 系统(精确版本) → 本地目录."""
         sys_path = cls._find_system_lib(fname)
@@ -600,6 +630,7 @@ class XVLib:
             cls._check_xvsdk()
             lib_dir = os.path.dirname(__file__)
 
+            cls._load_tbb_lib(lib_dir)
             cls._load_opencv_lib(lib_dir, 'libopencv_core.so.4.2')
             cls._load_opencv_lib(lib_dir, 'libopencv_imgproc.so.4.2')
 
